@@ -1,8 +1,14 @@
 #!/bin/sh
 
-gh_ubuntu ()
+gh_version()
 {
-    wget -O /tmp/gh-cli.deb https://github.com/cli/cli/releases/download/v1.10.3/gh_1.10.3_linux_amd64.deb
+    wget -O- https://api.github.com/repos/cli/cli/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d v\", | xargs
+}
+
+gh_ubuntu()
+{
+    VERSION=$(gh_version)
+    wget -O /tmp/gh-cli.deb https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_linux_amd64.deb
     apt install -fy /tmp/gh-cli.deb
 }
 
