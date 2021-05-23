@@ -1,5 +1,10 @@
 #!/bin/sh
 
+gh_version()
+{
+    $(wget -O- https://api.github.com/repos/cli/cli/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d v\",)
+}
+
 echo "Checking if key exists...\n"
 
 if [ -f "$HOME/.ssh/id_rsa" ]
