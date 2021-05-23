@@ -12,6 +12,13 @@ gh_ubuntu()
     apt install -fy /tmp/gh-cli.deb
 }
 
+gh_windows()
+{
+    VERSION=$(gh_version)
+    wget -O /tmp/gh-cli.zip https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_windows_amd64.zip
+    unzip -d /usr/local/bin/ /tmp/gh-cli.zip bin/gh.exe
+}
+
 echo "Checking if key exists...\n"
 
 if [ -f "$HOME/.ssh/id_rsa" ]
@@ -29,7 +36,7 @@ if [ command -v gh &> /dev/null ]
 then
     echo "GitHub CLI is already installed!\n"
 else
-    echo "GitHub CLIdock is not installed!\n"
+    echo "GitHub CLI is not installed!\n"
     echo "Fetching GitHub CLI installer...\n"
     gh_ubuntu
     echo "GitHub CLI is now installed!"
