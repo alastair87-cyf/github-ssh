@@ -48,6 +48,7 @@ else
         gh_ubuntu
     else if [$SYS_TYPE -eq "MING64_NT"]
         gh_mingw
+    fi
     printf "GitHub CLI is now installed!\n"
 fi
 
