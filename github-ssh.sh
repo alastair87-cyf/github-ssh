@@ -43,14 +43,12 @@ else
     printf "GitHub CLI is not installed!\n"
     printf "Fetching latest GitHub CLI installer...\n"
     SYS_TYPE = $(get_systype)
-    if [ $SYS_TYPE -eq "Linux" ]
+    if [[ $SYS_TYPE -eq "Linux" ]]
     then
         gh_ubuntu
-    else if [$SYS_TYPE -eq "MING64_NT"]
+    elif [[ $SYS_TYPE -eq "MING64_NT" ]]
+    then
         gh_mingw
     fi
     printf "GitHub CLI is now installed!\n"
 fi
-
-printf "Now authenticating to GitHub:\n"
-gh auth login
