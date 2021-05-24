@@ -19,8 +19,9 @@ gh_mingw()
 
 get_systype()
 {
-    IFS="-" read -r -a UNAME_ARR <<< $(uname)
-    echo $UNAME_ARR[0]
+    local SYS_TYPE=""
+    IFS="-" read -r -a SYS_TYPE <<< $(uname)
+    echo "$SYS_TYPE"
 }
 
 printf "Checking if key exists...\n"
@@ -42,7 +43,7 @@ then
 else
     printf "GitHub CLI is not installed!\n"
     printf "Fetching latest GitHub CLI installer...\n"
-    SYS_TYPE = $(get_systype)
+    SYS_TYPE = "$(get_systype)"
     if [[ $SYS_TYPE -eq "Linux" ]]
     then
         gh_ubuntu
