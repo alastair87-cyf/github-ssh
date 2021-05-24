@@ -1,46 +1,55 @@
-#!/bin/sh
-
-gh_version()
-{
-    wget -O- https://api.github.com/repos/cli/cli/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d v\", | xargs
-}
+#!/bin/bash
 
 gh_ubuntu()
 {
-    VERSION=$(gh_version)
+    VERSION=$(wget -O- https://api.github.com/repos/cli/cli/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d v\", | xargs)
     wget -O /tmp/gh-cli.deb https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_linux_amd64.deb
     apt install -fy /tmp/gh-cli.deb
+    rm -f /tmp/gh-cli.deb
 }
 
-gh_windows()
+gh_mingw()
 {
-    VERSION=$(gh_version)
-    wget -O /tmp/gh-cli.zip https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_windows_amd64.zip
-    unzip -d /usr/local/bin/ /tmp/gh-cli.zip bin/gh.exe
+    mkdir -p $HOME/.local/bin
+    VERSION=$(curl -s https://api.github.com/repos/cli/cli/releases/latest | grep tag_name | cut -d : -f 2,3 | tr -d v\", | xargs)
+    curl -L -o /tmp/gh-cli.zip https://github.com/cli/cli/releases/download/v${VERSION}/gh_${VERSION}_windows_amd64.zip
+    unzip -jd /usr/bin/ /tmp/gh-cli.zip bin/gh.exe
+    rm -f /tmp/gh-cli.zip
 }
 
-echo "Checking if key exists...\n"
+get_systype()
+{
+    IFS="-" read -r -a UNAME_ARR <<< $(uname)
+    echo $UNAME_ARR[0]
+}
+
+printf "Checking if key exists...\n"
 
 if [ -f "$HOME/.ssh/id_rsa" ]
 then
-    echo "Key detected at ~/.ssh/id_rsa!\n"
+    printf "Key detected at ~/.ssh/id_rsa!\n"
 else
-    echo "No key detected - creating key...\n"
+    printf "No key detected - creating key...\n"
     ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
-    echo "Key created at ~/.ssh/id_rsa!\n"
+    printf "Key created at ~/.ssh/id_rsa!\n"
 fi
 
-echo "Checking for GitHub CLI...\n"
+printf "Checking for GitHub CLI...\n"
 
 if [ command -v gh &> /dev/null ]
 then
-    echo "GitHub CLI is already installed!\n"
+    printf "GitHub CLI is already installed!\n"
 else
-    echo "GitHub CLI is not installed!\n"
-    echo "Fetching GitHub CLI installer...\n"
-    gh_ubuntu
-    echo "GitHub CLI is now installed!"
+    printf "GitHub CLI is not installed!\n"
+    printf "Fetching latest GitHub CLI installer...\n"
+    SYS_TYPE = $(get_systype)
+    if [ $SYS_TYPE -eq "Linux" ]
+    then
+        gh_ubuntu
+    else if [$SYS_TYPE -eq "MING64_NT"]
+        gh_mingw
+    printf "GitHub CLI is now installed!\n"
 fi
 
-echo "Now authenticating to GitHub:\n"
+printf "Now authenticating to GitHub:\n"
 gh auth login
